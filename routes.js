@@ -8,7 +8,14 @@ const Routes = function(app, db) {
         usersDB.find().toArray((err, result) => {
             if (err) throw err;
             res.json(result);
+            res.status(200);
         })
+    });
+    app.post('/api/users/login', (req, res) => {
+        console.log(req);
+        //db.collection('users').insertOne({"name": "Vald", "password": "1243"})
+        res.status(200);
+        res.send("added")
     });
 };
 

@@ -3,9 +3,15 @@ import { MongoClient } from 'mongodb';
 import express from 'express';
 import bodyParser from 'body-parser';
 import Routes from './routes.js';
+import cors from 'cors';
 
-// let port = 3000; // process.env.PORT
-let port = process.env.PORT;
+var corsOptions = {
+  origin: 'http://localhost:3000',
+  optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+}
+
+let port = 3000;
+// let port = process.env.PORT;
 let app = express();
 
 const mongoURL = 'mongodb://mongo:4zQlaJZR2IDZoER680w1@containers-us-west-29.railway.app:7317';
@@ -15,7 +21,6 @@ client.connect((err, database) => {
   if (err) return console.log('Connection error: ', err);
   const db = database.db('todo');
   console.log('db loaded');
-  // db.collection('users').insertOne({"name": "Vald", "password": "1243"})
 
   Routes(app, db);
   console.log('api loaded');
