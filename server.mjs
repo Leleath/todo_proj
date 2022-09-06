@@ -4,7 +4,8 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import Routes from './routes.js';
 
-let port = 3000; // process.env.PORT
+// let port = 3000; // process.env.PORT
+let port = process.env.PORT;
 let app = express();
 
 const mongoURL = 'mongodb://mongo:4zQlaJZR2IDZoER680w1@containers-us-west-29.railway.app:7317';
@@ -18,7 +19,7 @@ client.connect((err, database) => {
 
   Routes(app, db);
   console.log('api loaded');
-  
+
   app.listen(port, () => {
     console.log('api server started');
   });
