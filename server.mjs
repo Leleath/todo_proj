@@ -4,6 +4,7 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import Routes from './routes.js';
 import cors from 'cors';
+let app = express();
 
 let DEBUG = false;
 
@@ -20,8 +21,6 @@ if (DEBUG) {
 } else {
   port = process.env.PORT;
 }
-
-let app = express();
 
 const mongoURL = 'mongodb://mongo:4zQlaJZR2IDZoER680w1@containers-us-west-29.railway.app:7317';
 
