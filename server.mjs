@@ -5,13 +5,19 @@ import bodyParser from 'body-parser';
 import Routes from './routes.js';
 import cors from 'cors';
 
+let DEBUG = false;
+
 var corsOptions = {
   origin: 'http://localhost:3000',
   optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
 }
 
-let port = 3000;
-// let port = process.env.PORT;
+if (DEBUG) {
+  let port = 3000;
+} else {
+  let port = process.env.PORT;
+}
+
 let app = express();
 
 const mongoURL = 'mongodb://mongo:4zQlaJZR2IDZoER680w1@containers-us-west-29.railway.app:7317';
