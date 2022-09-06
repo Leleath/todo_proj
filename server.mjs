@@ -12,10 +12,11 @@ var corsOptions = {
   optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
 }
 
+let port;
 if (DEBUG) {
-  let port = 3000;
+  port = 3000;
 } else {
-  let port = process.env.PORT;
+  port = process.env.PORT;
 }
 
 let app = express();
