@@ -4,9 +4,13 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import Routes from './routes.js';
 import cors from 'cors';
+import md5 from 'md5';
+const md5key = "todo";
+
+let jsonParser = express.json();
 let app = express();
 
-let DEBUG = false;
+let DEBUG = true;
 
 var corsOptions = {
   origin: 'http://localhost:3000',
@@ -30,7 +34,7 @@ client.connect((err, database) => {
   const db = database.db('todo');
   console.log('db loaded');
 
-  Routes(app, db);
+  Routes(app, db, jsonParser, md5, md5key);
   console.log('api loaded');
 
   app.listen(port, () => {
