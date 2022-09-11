@@ -16,12 +16,7 @@ var corsOptions = {
 }
 app.use(cors(corsOptions));
 
-let port;
-if (process.env.DEBUG) {
-  port = 3000;
-} else {
-  port = process.env.PORT;
-}
+let port = (process.env.DEBUG == "dev") ? 3000 : process.env.PORT;
 console.log(port);
 
 let db = mysql.createConnection({
