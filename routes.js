@@ -1,49 +1,79 @@
-const Routes = function(app, db, jsonParser, md5, md5key) {
-    // app.get('/api/users', (req, res) => {
-    //     db.collection('users').insertOne({"name": "Nikita", "password": "deodoeod"})
-    //     console.log('work')
-    // });
-    app.get('/api/users', (req, res) => {
-        let usersDB = db.collection('users');
-        usersDB.find().toArray((err, result) => {
-            if (err) throw err;
-            res.json(result);
-            res.status(200);
-        })
+module.exports = function(app, db, bodyParser, md5, md5key) {
+    const APIURL = '/api';
+
+    // api middleware
+    // app.use((req, res, next) => {
+    //     req.headers['From-Middleware'] = 1;
+    //     next();
+    // })
+
+    app.get(APIURL + '/users', (req, res) => {
+        let sql = 'SELECT * from users';
+
+        db.query(sql, (err, result, fields) => {
+            let users = [];
+            for (let i in result) {
+                users.push(result[i].username);
+            }
+            res.json(users)
+        });
     });
     
-    app.post('/api/users/login', jsonParser, (req, res) => {
-        let usersDB = db.collection('users');
-        let login = req.body.name;
+    app.post(APIURL + '/users/find', bodyParser, (req, res) => {
+        // let usersDB = db.collection('users');
+        // usersDB.find({"name": req.body.name}).toArray((err, result) => {
+        //     if (err) throw err;
+        //     res.json(result);
+        //     res.status(200);
+        // });
+    });
+    
+    app.post(APIURL + '/users/login', bodyParser, (req, res) => {
+        let username = req.body.username;
         let password = md5(req.body.password + md5key);
-        // можно сделать проще, но мне пока сложновато
-        usersDB.find({"name": login, "password": password}).toArray((err, result) => {
+
+        let sql = 'SELECT password FROM users WHERE username = "' + username + '"';
+        db.query(sql, (err, result, fields) => {
             if (err) throw err;
-            if (result != "") {
-                res.json(result);
+            if (result[0].password == password) {
+                res.json({"status": "OK"});
                 res.status(200);
             } else {
                 res.json({"status": "Incorrect login or password"});
+                res.status(200);
             }
         })
     });
     
-    app.post('/api/users/signin', jsonParser, (req, res) => {
-        let login = req.body.name;
+    // ADMIN API
+    app.post(APIURL + '/admin/users/create', bodyParser, (req, res) => {
+        let username = req.body.username;
         let password = md5(req.body.password + md5key);
-        db.collection('users').insertOne({"name": login, "password": password});
-        res.status(200);
-        res.json({"status": "OK"})
-    });
+
+        if (username != undefined) {
+            let sql = 'INSERT INTO users (username, password) VALUES ("' + username + '","' + password + '")';
+            db.query(sql, (err, result, fields) => {
+                if (err) throw err;
     
-    app.post('/api/users/find', jsonParser, (req, res) => {
-        let usersDB = db.collection('users');
-        usersDB.find({"name": req.body.name}).toArray((err, result) => {
-            if (err) throw err;
-            res.json(result);
-            res.status(200);
-        });
+                res.json({"status": "OK"});
+                res.status(200);
+            })
+        } else {
+            res.json({"status": "error"})
+        }
     });
+
+    app.post(APIURL + '/admin/users/delete', bodyParser, (req, res) => {
+        let login = req.body.login;
+        let password = md5(req.body.password);
+        let sql = 'DELETE FROM users WHERE login = "' + login + '"';
+        db.query(sql, (err, result, fields) => {
+            if (err) throw err;
+
+            res.json({"status": "OK"});
+            res.status(200);
+        })
+    })
 
     // app.post('/api/users/login', (req, res) => {
     //     console.log(req);
@@ -51,6 +81,6 @@ const Routes = function(app, db, jsonParser, md5, md5key) {
     //     res.status(200);
     //     res.send("added")
     // });
-};
 
-module.exports = Routes;
+    console.log('api loaded');
+};
