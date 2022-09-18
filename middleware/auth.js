@@ -9,6 +9,7 @@ module.exports = (req, res, next) => {
     let tokenParts = req.headers.authorization
       // .split(" ")[1]
       .split('.')
+    console.log(tokenParts)
     let signature = crypto
       .createHmac('SHA256', TOKENKEY)
       .update(`${tokenParts[0]}.${tokenParts[1]}`)
