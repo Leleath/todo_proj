@@ -3,7 +3,7 @@ const auth = require('./middleware/auth');
 const crypto = require('crypto');
 const bodyParser = require('body-parser').json();
 const md5 = require('md5');
-const { nextTick } = require('process');
+require('dotenv').config();
 
 const APIURL = '/api';
 const MD5KEY = process.env.MD5KEY;
@@ -43,7 +43,7 @@ module.exports = function(app, db) {
                     let body = Buffer.from(JSON.stringify(result[0])).toString('base64');
             
                     let signature = crypto
-                        .createHmac('SHA256', TOKENKEY)
+                        .createHmac('sha256', TOKENKEY)
                         .update(`${head}.${body}`)
                         .digest('base64');
 
@@ -65,7 +65,6 @@ module.exports = function(app, db) {
         let username = req.body.username;
         let password = md5(req.body.password + MD5KEY);
         let sql;
-
 
         // Поиск в БД одиннакового имя пользователя
         sql = 'SELECT * FROM users WHERE username = "' + username + '"';
