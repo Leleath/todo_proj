@@ -2,7 +2,7 @@
 require('dotenv').config();
 
 const crypto = require('crypto');
-const TOKENKEY = process.env.TOKENKEY;
+const TOKENKEY = "todo";
 
 module.exports = (req, res, next) => {
   if (req.headers.authorization) {
