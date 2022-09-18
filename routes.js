@@ -7,7 +7,7 @@ require('dotenv').config();
 
 const APIURL = '/api';
 const MD5KEY = process.env.MD5KEY;
-const TOKENKEY = process.env.TOKENKEY;
+const TOKENKEY = "todo";
 
 module.exports = function(app, db) {
 
@@ -43,8 +43,8 @@ module.exports = function(app, db) {
                     let body = Buffer.from(JSON.stringify(result[0])).toString('base64');
             
                     let signature = crypto
-                        .createHmac('sha256', TOKENKEY)
-                        .update(`${head}.${body}`)
+                        .createHmac('SHA256', TOKENKEY)
+                        .update(head + '.' + body)
                         .digest('base64');
 
                     return res.status(200).json({
