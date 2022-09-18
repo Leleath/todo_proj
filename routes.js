@@ -72,9 +72,6 @@ module.exports = function(app, db) {
         let password = md5(req.body.password + MD5KEY);
         let sql;
 
-        if (username == "" && password == "") {
-            return res.status(401).json({ message: "Invalid username or password" });
-        }
 
         // Поиск в БД одиннакового имя пользователя
         sql = 'SELECT * FROM users WHERE username = "' + username + '"';

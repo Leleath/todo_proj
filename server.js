@@ -7,12 +7,12 @@ app.use(express.json());
 
 // без понятия что это, но это помогает
 const cors = require('cors');
-var corsOptions = {
-  origin: 'http://localhost:3000',
-  credentials:true,
-  optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
-}
-app.use(cors(corsOptions));
+// var corsOptions = {
+//   origin: 'http://localhost:3000',
+//   credentials:true,
+//   optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+// }
+app.use(cors());
 
 // Присваивания порта по стенду проекта
 let port = (process.env.DEBUG == "dev") ? 3000 : process.env.PORT;
