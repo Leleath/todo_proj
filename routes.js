@@ -1,5 +1,30 @@
-module.exports = function(app, db, bodyParser, md5, md5key) {
-    const APIURL = '/api';
+const auth = require('./middleware/auth');
+// const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
+const bodyParser = require('body-parser').json();
+const md5 = require('md5');
+const { nextTick } = require('process');
+
+const APIURL = '/api';
+const MD5KEY = process.env.MD5KEY;
+const TOKENKEY = process.env.TOKENKEY;
+
+module.exports = function(app, db) {
+
+    function GetJWToken(result) {
+        let head = Buffer.from(
+            JSON.stringify({ alg: 'HS256', typ: 'jwt' })
+        ).toString('base64');
+
+        let body = Buffer.from(JSON.stringify(result)).toString('base64');
+
+        let signature = crypto
+            .createHmac('SHA256', TOKENKEY)
+            .update(`${head}.${body}`)
+            .digest('base64');
+
+        return {"head": head, "body": body, "signature": signature};
+    }
 
     // api middleware
     // app.use((req, res, next) => {
@@ -7,80 +32,68 @@ module.exports = function(app, db, bodyParser, md5, md5key) {
     //     next();
     // })
 
-    app.get(APIURL + '/users', (req, res) => {
-        let sql = 'SELECT * from users';
-
+    app.get(APIURL + '/users', auth, (req, res) => {
+        let sql = 'SELECT * FROM users';
         db.query(sql, (err, result, fields) => {
-            let users = [];
-            for (let i in result) {
-                users.push(result[i].username);
-            }
-            res.json(users)
+            if (err) throw err;
+            
+            return res.status(200).json(result);
         });
     });
     
-    app.post(APIURL + '/users/find', bodyParser, (req, res) => {
-        // let usersDB = db.collection('users');
-        // usersDB.find({"name": req.body.name}).toArray((err, result) => {
-        //     if (err) throw err;
-        //     res.json(result);
-        //     res.status(200);
-        // });
-    });
-    
     app.post(APIURL + '/users/login', bodyParser, (req, res) => {
-        let username = req.body.username;
-        let password = md5(req.body.password + md5key);
+        const username = req.body.username;
+        const password = md5(req.body.password + MD5KEY);
 
-        let sql = 'SELECT password FROM users WHERE username = "' + username + '"';
+        let sql = 'SELECT * FROM users WHERE username = "' + username + '"';
         db.query(sql, (err, result, fields) => {
             if (err) throw err;
-            if (result[0].password == password) {
-                res.json({"status": "OK"});
-                res.status(200);
+
+            if (result) {
+                if (result[0].password == password) {
+                    let data = GetJWToken(result[0]);
+
+                    return res.status(200).json({
+                        id: result[0].id,
+                        username: result[0].username,
+                        token: `${data.head}.${data.body}.${data.signature}`,
+                    })
+                } else {
+                    return res.status(400).json({message: "Incorrect login or password"});
+                }
             } else {
-                res.json({"status": "Incorrect login or password"});
-                res.status(200);
+                return res.status(400).json({message: "user not found"});
             }
         })
     });
-    
-    // ADMIN API
-    app.post(APIURL + '/admin/users/create', bodyParser, (req, res) => {
+
+    app.post(APIURL + '/users/signup', bodyParser, (req, res, next) => {
         let username = req.body.username;
-        let password = md5(req.body.password + md5key);
+        let password = md5(req.body.password + MD5KEY);
+        let sql;
 
-        if (username != undefined) {
-            let sql = 'INSERT INTO users (username, password) VALUES ("' + username + '","' + password + '")';
-            db.query(sql, (err, result, fields) => {
-                if (err) throw err;
-    
-                res.json({"status": "OK"});
-                res.status(200);
-            })
-        } else {
-            res.json({"status": "error"})
+        if (username == "" && password == "") {
+            return res.status(401).json({ message: "Invalid username or password" });
         }
-    });
 
-    app.post(APIURL + '/admin/users/delete', bodyParser, (req, res) => {
-        let login = req.body.login;
-        let password = md5(req.body.password);
-        let sql = 'DELETE FROM users WHERE login = "' + login + '"';
+        // Поиск в БД одиннакового имя пользователя
+        sql = 'SELECT * FROM users WHERE username = "' + username + '"';
         db.query(sql, (err, result, fields) => {
+            // Остановить, если ошибка
             if (err) throw err;
-
-            res.json({"status": "OK"});
-            res.status(200);
+            
+            if (result.length > 0) {
+                return res.status(401).json({ message: "User exists"});
+            } else {
+                sql = 'INSERT INTO users (username, password, role) VALUES ("' + username + '","' + password + '","User")';
+                db.query(sql, (err, result, fields) => {
+                    if (err) throw err;
+        
+                    return res.status(200).json({message: "User created"});
+                });
+            }
         })
-    })
-
-    // app.post('/api/users/login', (req, res) => {
-    //     console.log(req);
-    //     //db.collection('users').insertOne({"name": "Vald", "password": "1243"})
-    //     res.status(200);
-    //     res.send("added")
-    // });
+    });
 
     console.log('api loaded');
 };

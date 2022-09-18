@@ -1,13 +1,11 @@
-// import Routes from './routes.js';
 require('dotenv').config();
 
 const mysql = require('mysql2');
 const express = require('express');
-const bodyParser = require('body-parser').json();
-const md5 = require('md5');
-
 const app = express();
+app.use(express.json());
 
+// без понятия что это, но это помогает
 const cors = require('cors');
 var corsOptions = {
   origin: 'http://localhost:3000',
@@ -16,9 +14,11 @@ var corsOptions = {
 }
 app.use(cors(corsOptions));
 
+// Присваивания порта по стенду проекта
 let port = (process.env.DEBUG == "dev") ? 3000 : process.env.PORT;
 console.log(port);
 
+// Создание подключения к БД
 let db = mysql.createConnection({
   host: process.env.MYSQLHOST,
   user: process.env.MYSQLUSER,
@@ -27,14 +27,21 @@ let db = mysql.createConnection({
   port: process.env.MYSQLPORT
 });
 
+// (проверка) Подключение к БД
 db.connect(function(err) {
+  // Остановить, если ошибка
   if (err) throw err;
+
   console.log('DB connected');
 
-  require('./routes.js')(app, db, bodyParser, md5, process.env.MD5KEY);
+  // Подключение файла с API
+  require('./routes.js')(app, db);
 
+  // Создание прослушки сервера
   app.listen(port, (err) => {
+    // Остановить, если ошибка
     if (err) throw err;
+
     console.log('api server started');
   })
 })
