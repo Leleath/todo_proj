@@ -19,9 +19,12 @@ module.exports = function(app, db) {
 
     app.get(APIURL + '/users', auth, (req, res) => {
         let sql = 'SELECT * FROM users';
+        console.log("get users")
         db.query(sql, (err, result, fields) => {
             if (err) throw err;
             
+            console.log("get users list")
+
             return res.status(200).json(result);
         });
     });
