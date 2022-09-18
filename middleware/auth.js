@@ -7,7 +7,7 @@ const TOKENKEY = "todo";
 module.exports = (req, res, next) => {
   if (req.headers.authorization) {
     let tokenParts = req.headers.authorization
-      // .split(" ")[1]
+      .split(" ")[1]
       .split('.')
     let signature = crypto
       .createHmac('SHA256', TOKENKEY)
