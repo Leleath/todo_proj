@@ -12,7 +12,9 @@ const cors = require('cors');
 //   credentials:true,
 //   optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
 // }
-app.use(cors());
+app.use(cors({
+  origin: '*'
+}));
 
 // Присваивания порта по стенду проекта
 let port = (process.env.DEBUG == "dev") ? 3000 : process.env.PORT;
