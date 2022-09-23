@@ -67,7 +67,7 @@ module.exports = function(app) {
         }
     });
 
-    app.get(APIURL + '/tasks', async (res, req) => {
+    app.get(APIURL + '/tasks', async (req, res) => {
         try {
             const user = Parse.User.current();
             const relation = user.relation("Tasks");
@@ -81,15 +81,15 @@ module.exports = function(app) {
         }
     })
 
-    // app.post(APIURL + '/tasks/add', (res, req) => {
+    // app.post(APIURL + '/tasks/add', (req, res) => {
         
     // })
 
-    // app.put(APIURL + '/tasks/update', (res, req) => {
+    // app.put(APIURL + '/tasks/update', (req, res) => {
         
     // })
     
-    // app.delete(APIURL + '/tasks/delete', (res, req) => {
+    // app.delete(APIURL + '/tasks/delete', (req, res) => {
         
     // })
 
