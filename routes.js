@@ -4,7 +4,7 @@ const auth = require('./middleware/auth');
 const crypto = require('crypto');
 const bodyParser = require('body-parser').json();
 const md5 = require('md5');
-const Parse = require('parse.node');
+const Parse = require('parse/node');
 Parse.initialize(process.env.DBAPPID, process.env.DBJSKEY);
 
 const APIURL = '/api';
