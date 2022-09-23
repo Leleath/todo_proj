@@ -6,6 +6,7 @@ const bodyParser = require('body-parser').json();
 const md5 = require('md5');
 const Parse = require('parse/node');
 Parse.initialize(process.env.DBAPPID, process.env.DBJSKEY);
+Parse.serverURL = process.env.DBURL;
 
 const APIURL = '/api';
 const MD5KEY = process.env.MD5KEY;
