@@ -9,7 +9,7 @@ const APIURL = '/api';
 const MD5KEY = process.env.MD5KEY;
 const TOKENKEY = "todo";
 
-module.exports = function(app, db) {
+module.exports = function(app) {
 
     app.get(APIURL + '/users', auth, (req, res) => {
         res.json({message:'users'});

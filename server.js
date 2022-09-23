@@ -19,8 +19,7 @@ app.listen(port, (err) => {
   if (err) throw err;
 
   // Подключение API
-  // Подключение API
-    require('./routes.js').default(app, db);
+  require('./routes.js')(app);
 
   console.log('api server started');
 })
