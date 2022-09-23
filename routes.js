@@ -31,22 +31,23 @@ module.exports = function(app) {
   
         try{
             let user = await Parse.User.logIn(infoUser.username, infoUser.password);
-            let head = Buffer.from(
-                JSON.stringify({ alg: 'HS256', typ: 'jwt' })
-            ).toString('base64');
+            // let head = Buffer.from(
+            //     JSON.stringify({ alg: 'HS256', typ: 'jwt' })
+            // ).toString('base64');
     
-            let body = Buffer.from(JSON.stringify(user)).toString('base64');
+            // let body = Buffer.from(JSON.stringify(user)).toString('base64');
     
-            let signature = crypto
-                .createHmac('SHA256', TOKENKEY)
-                .update(head + '.' + body)
-                .digest('base64');
+            // let signature = crypto
+            //     .createHmac('SHA256', TOKENKEY)
+            //     .update(head + '.' + body)
+            //     .digest('base64');
 
-            return res.status(200).json({
-                id: user.id,
-                username: user.username,
-                token: `${head}.${body}.${signature}`,
-            })
+            return res.status(200).json(user);
+            // return res.status(200).json({
+            //     id: user.id,
+            //     username: user.username,
+            //     token: `${head}.${body}.${signature}`,
+            // })
         } catch (error){
             return res.status(400).json({message: "user not found"});
         }
