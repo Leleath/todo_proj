@@ -53,6 +53,7 @@ module.exports = function(app) {
     });
 
     app.post(APIURL + '/users/signup', bodyParser, async (req, res, next) => {
+        console.log(process.env.DBAPPID)
         let infoUser = req.body;    
         let user = new Parse.User();
       
