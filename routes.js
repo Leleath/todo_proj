@@ -62,7 +62,7 @@ module.exports = function(app) {
 
         try{
             await user.signUp();
-            res.status(200).json({message: "User created"});
+            res.status(200).json(user);
         } catch (error) {
             res.status(400).json({message: "error"})
         }
