@@ -3,7 +3,6 @@ require('dotenv').config();
 const auth = require('./middleware/auth');
 const crypto = require('crypto');
 const bodyParser = require('body-parser').json();
-const md5 = require('md5');
 const Parse = require('parse/node');
 Parse.initialize(process.env.DBAPPID, process.env.DBJSKEY);
 Parse.serverURL = process.env.DBURL;
@@ -53,8 +52,7 @@ module.exports = function(app) {
         }
     });
 
-    app.post(APIURL + '/users/signup', bodyParser, async (req, res, next) => {
-        console.log(process.env.DBAPPID)
+    app.post(APIURL + '/users/signup', bodyParser, async (req, res) => {
         let infoUser = req.body;    
         let user = new Parse.User();
       
@@ -68,6 +66,32 @@ module.exports = function(app) {
             res.status(400).json({message: "error"})
         }
     });
+
+    app.get(APIURL + '/tasks', async (res, req) => {
+        try {
+            const user = Parse.User.current();
+            const relation = user.relation("Tasks");
+            await relation.query().find({
+                success: function(list) {
+                    res.status(200).json({message: list})
+                }
+              });
+        } catch (err) {
+            res.status(400).json({message: "error"})
+        }
+    })
+
+    // app.post(APIURL + '/tasks/add', (res, req) => {
+        
+    // })
+
+    // app.put(APIURL + '/tasks/update', (res, req) => {
+        
+    // })
+    
+    // app.delete(APIURL + '/tasks/delete', (res, req) => {
+        
+    // })
 
     console.log('api loaded');
 };
